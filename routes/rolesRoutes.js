@@ -6,6 +6,7 @@ const restrictTo = require('../middleware/restrictedTo');
 
 const router = express.Router();
 
+//Add these here
 //router.use(protect);
 //router.use(restrictTo(["Admin"]));
 
