@@ -106,7 +106,6 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const {username, password} = req.body;
   if (!username || !password) {
     return next(new AppError('Please Provide username and password', 400));

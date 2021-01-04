@@ -12,8 +12,9 @@ const AppError = require('./utils/appError');
 const globalError = require('./Controllers/errorController');
 const rolesRoutes = require('./routes/rolesRoutes');
 const users = require('./routes/userRoutes');
-
 const askJackie = require('./routes/askJackieRoutes');
+const ConnectCategoriesRoutes = require('./routes/ConnectCategoriesRoutes');
+const ConnectProfessionalsRoutes = require('./routes/ConnectProfessionalsRoutes');
 
 const app = express();
 //body parse middleware
@@ -62,6 +63,8 @@ process.env.NODE_ENV === 'development' ? app.use(morgan('dev')) : null;
 app.use('/api/roles', rolesRoutes);
 app.use('/api/users', users);
 app.use('/api/askJackie', askJackie);
+app.use('/api/connectCategories', ConnectCategoriesRoutes);
+app.use('/api/connectProfessionals', ConnectProfessionalsRoutes);
 
 app.all('*', (req, res, next) => {
   next(

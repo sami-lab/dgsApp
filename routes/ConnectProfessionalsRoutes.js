@@ -1,5 +1,5 @@
 const express = require('express');
-const askJackieController = require('../Controllers/askJackieController');
+const connectProfessionalsController = require('../Controllers/connectProfessionalsController');
 
 const upload = require('../middleware/fileUpload');
 const protect = require('../middleware/protect');
@@ -7,9 +7,24 @@ const protect = require('../middleware/protect');
 
 const router = express.Router();
 router.use(protect);
-//
-router.post('/', upload.single('attachment'), askJackieController.createOne);
-router.get('/', askJackieController.getAll);
+
+//For admin only
+//router.use(restrictTo(['Admin']));
+router.post(
+  '/',
+  upload.single('image'),
+  connectProfessionalsController.createOne,
+);
+
+router.get(
+  '/professionals/:categoryId',
+  connectProfessionalsController.getAllWithCategory,
+);
+router.get('/', connectProfessionalsController.getAll);
+router.get('/:id', connectProfessionalsController.getOne);
+router.patch('/:id', connectProfessionalsController.update);
+router.delete('/:id', connectProfessionalsController.delete);
+
 // router.post('/validateUsername', authController.validateUsername);
 // router.post('/validateEmail', authController.validateEmail);
 // router.post('/verifyEmail/:token', authController.verifyEmail);
