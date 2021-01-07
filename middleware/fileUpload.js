@@ -5,9 +5,7 @@ var fs = require('fs');
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    console.log(fs.existsSync('/public/files'));
     if (fs.existsSync('/public/files')) {
-      console.log('exist', fs.existsSync('/public/files'));
       callback(null, 'public/files');
     } else {
       fs.mkdir('/public/files', {recursive: true}, () => {
@@ -17,16 +15,14 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, callback) => {
     //const ext = file.mimetype.split('/')[1]
-    console.log(file);
     callback(null, `${Date.now()}-${file.originalname}`);
     //callback(null,`user-${req.user.id}-${Data.now()}-${file.filename}.${ext}`)
   },
 });
 
 const multerFilter = (req, file, cb) => {
-  if (
-    file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|pdf|doc|docx)$/)
-  ) {
+  console.log(req.allowedType);
+  if (file.originalname.match(req.allowedType)) {
     cb(null, true);
   } else {
     cb(new AppError('Invalid Format', 400), false);

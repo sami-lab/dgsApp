@@ -147,6 +147,24 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
+exports.validateToken = catchAsync(async (req, res, next) => {
+  //Comparing Token
+  const hashToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+  const user = await User.findOne({
+    passwordResetToken: hashToken,
+    passwordResetExpires: {$gt: Date.now()},
+  });
+  if (!user) return next(new AppError('Token is Invalid or expired', 400));
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Reset Your password Now',
+  });
+});
+
 exports.resetPassword = catchAsync(async (req, res, next) => {
   //Comparing Token
   const hashToken = crypto

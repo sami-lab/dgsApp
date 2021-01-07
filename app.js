@@ -15,6 +15,8 @@ const users = require('./routes/userRoutes');
 const askJackie = require('./routes/askJackieRoutes');
 const ConnectCategoriesRoutes = require('./routes/ConnectCategoriesRoutes');
 const ConnectProfessionalsRoutes = require('./routes/ConnectProfessionalsRoutes');
+const breatheCategoriesRoutes = require('./routes/breatheCategoriesRoutes');
+const breatheRoutes = require('./routes/breatheRoutes');
 
 const app = express();
 //body parse middleware
@@ -65,6 +67,8 @@ app.use('/api/users', users);
 app.use('/api/askJackie', askJackie);
 app.use('/api/connectCategories', ConnectCategoriesRoutes);
 app.use('/api/connectProfessionals', ConnectProfessionalsRoutes);
+app.use('/api/breatheCategories', breatheCategoriesRoutes);
+app.use('/api/breathe', breatheRoutes);
 
 app.all('*', (req, res, next) => {
   next(

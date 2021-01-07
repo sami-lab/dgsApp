@@ -5,7 +5,7 @@ module.exports = class SendEmail {
   constructor(user, url, homepageLink) {
     (this.to = user.email), (this.firstName = user.name);
     (this.url = url), (this.homepage = homepageLink);
-    this.from = `Divorced Girl Smiling <${process.env.EMAIL_FROM}>`;
+    this.from = `Divorced Girl Smiling <${process.env.Email}>`;
   }
   createTransport() {
     return nodemailer.createTransport({
@@ -25,7 +25,7 @@ module.exports = class SendEmail {
       url: this.url,
       subject,
       homepage: this.homepage,
-      admin: process.env.EMAIL_FROM,
+      admin: process.env.Email,
     });
     //Email Option
     const mailOptions = {

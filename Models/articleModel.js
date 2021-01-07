@@ -1,28 +1,27 @@
 const mongoose = require('mongoose');
 
-var BreatheSchema = mongoose.Schema({
+var articleSchema = mongoose.Schema({
   title: {
     type: String,
     trim: true,
-    required: [true, 'A Connect Professionals must have a name'],
+    required: [true, 'An article must have a name'],
   },
-  thumbnail: {
+  matter: {
     type: String,
-    default: 'default.png',
     required: true,
   },
   description: {
     type: String,
-    required: [true, 'A Breathe Video must have description'],
+    required: [true, 'An artcle must have description'],
   },
-  video: {
+  imageCover: {
     type: String,
-    required: [true, 'A Breathe Video must have video'],
-    default: 'default.mp4',
+    required: [true, 'An article must have a cover image'],
   },
+  images: [String],
   category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'breatheCategories',
+    ref: 'articleCategories',
     required: true,
   },
 
@@ -37,5 +36,5 @@ var BreatheSchema = mongoose.Schema({
   },
 });
 
-var Breathe = mongoose.model('breathe', BreatheSchema);
-module.exports = Breathe;
+var article = mongoose.model('article', articleSchema);
+module.exports = article;

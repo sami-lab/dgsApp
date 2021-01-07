@@ -14,6 +14,7 @@ router.post('/validateEmail', authController.validateEmail);
 router.post('/verifyEmail/:token', authController.verifyEmail);
 router.post('/login', authController.login);
 router.post('/forgetpassword', authController.forgotPassword);
+router.post('/validateResetToken/:token', authController.validateToken);
 router.patch('/resetPassword/:token', authController.resetPassword);
 router.post('/validateToken', protect, authController.validateUser);
 router.use(protect);

@@ -3,12 +3,19 @@ const askJackieController = require('../Controllers/askJackieController');
 
 const upload = require('../middleware/fileUpload');
 const protect = require('../middleware/protect');
+const setMimetype = require('../middleware/setMimetype');
+
 //const restrictTo = require('../middleware/restrictedTo');
 
 const router = express.Router();
 router.use(protect);
 //
-router.post('/', upload.single('attachment'), askJackieController.createOne);
+router.post(
+  '/',
+  setMimetype('document'),
+  upload.single('attachment'),
+  askJackieController.createOne,
+);
 router.get('/', askJackieController.getAll);
 // router.post('/validateUsername', authController.validateUsername);
 // router.post('/validateEmail', authController.validateEmail);
