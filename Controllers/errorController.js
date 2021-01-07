@@ -30,7 +30,7 @@ const sendErrDev = (err, res) => {
 };
 const sendErrProd = (err, res) => {
   //trusted Error Send Message To Client
-  console.error('Error ', err);
+  console.log('Error controller', err, err.message);
   if (err.Operational) {
     res.status(err.statusCode).json({
       status: err.status,
@@ -53,6 +53,7 @@ module.exports = (err, req, res, next) => {
     sendErrDev(err, res);
   } else {
     let error = {...err};
+    console.log('Test ', error);
     if (error.name === 'CastError') error = handleCastError(error);
     if (err.code === 11000) error = handleDuplicate(error);
     if (error.name === 'ValidationError') error = HandleValidationError(error);

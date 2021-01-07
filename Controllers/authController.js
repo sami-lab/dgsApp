@@ -24,7 +24,6 @@ const createLoginToken = (user, statusCode, req, res) => {
 //This route is only for User Registeration
 exports.signUp = catchAsync(async (req, res, next) => {
   const roleId = await Roles.findOne({name: 'User'});
-  console.log(roleId);
   let newUser = {
     name: req.body.name,
     email: req.body.email,
