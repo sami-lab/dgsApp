@@ -13,7 +13,6 @@ router.use(protect);
 //For admin only
 //router.use(restrictTo(['Admin']));
 router.route('/').post(
-  setMimetype('image'),
   upload.fields([
     {name: 'thumbnail', maxCount: 1},
     {name: 'video', maxCount: 1},

@@ -21,8 +21,24 @@ const storage = multer.diskStorage({
 });
 
 const multerFilter = (req, file, cb) => {
-  console.log(req.allowedType);
-  if (file.originalname.match(req.allowedType)) {
+  let allowedType = '';
+  switch (file.fieldname) {
+    case 'thumbnail':
+      allowedType = /\.(jpg|JPG|jpeg|JPEG|png|PNG)$/;
+      break;
+    case 'image':
+      allowedType = /\.(jpg|JPG|jpeg|JPEG|png|PNG)$/;
+      break;
+    case 'video':
+      allowedType = /\.(wmv|avi|mov|3gp|mp4|flv)$/;
+      break;
+    case 'attachement':
+      allowedType = /\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|pdf|doc|docx)$/;
+      break;
+    default:
+      break;
+  }
+  if (file.originalname.match(allowedType)) {
     cb(null, true);
   } else {
     cb(new AppError('Invalid Format', 400), false);
@@ -32,7 +48,7 @@ module.exports = multer({
   storage: storage,
   fileFilter: multerFilter,
   onError: function (err, next) {
-    next(next(new AppError('Error in Updloading Image.', 404)));
+    next(next(new AppError('Error in Updloading Image.', 500)));
   },
 });
 

@@ -24,11 +24,11 @@ exports.delete = catchAsync(async (req, res, next) => {
 });
 exports.update = catchAsync(async (req, res, next) => {
   const filterBody = filterObj(req.body, 'title', 'description', 'category'); //filtering unwanted Field
-  if (req.file && req.file.thumbnail) {
+  if (req.files && req.files.thumbnail[0].filename) {
     filterBody.thumbnail = req.file.thumbnail;
   }
-  if (req.file && req.file.video) {
-    filterBody.video = req.file.video;
+  if (req.files && req.files.video[0]) {
+    filterBody.video = req.files.video[0].filename;
   }
   const doc = await breatheModel.findByIdAndUpdate(req.params.id, filterBody, {
     new: true,
@@ -45,12 +45,11 @@ exports.update = catchAsync(async (req, res, next) => {
   });
 });
 
-
 exports.createOne = catchAsync(async (req, res, next) => {
   const filterBody = filterObj(req.body, 'title', 'description', 'category'); //filtering unwanted Field
-  if (req.file && req.thumbnail && req.video) {
-    filterBody.thumbnail = req.thumbnail;
-    filterBody.video = req.video;
+  if (req.files && req.files.thumbnail[0] && req.files.video[0]) {
+    filterBody.thumbnail = req.files.thumbnail[0].filename;
+    filterBody.video = req.files.video[0].filename;
   } else {
     return next(new AppError('thumbnail or video is missing', 403));
   }

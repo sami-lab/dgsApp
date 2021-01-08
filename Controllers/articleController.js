@@ -30,7 +30,10 @@ exports.update = catchAsync(async (req, res, next) => {
     'description',
     'category',
   ); //filtering unwanted Field
-  //if (req.file) filterBody.imageCover = req.file.filename;
+  if (req.files && req.files.imageCover)
+    filterBody.imageCover = req.files.imageCover[0].filename;
+  if (req.files && req.files.images)
+    filterBody.images = req.files.images.filter((item) => item.filename);
   filterBody.postedBy = req.user.id; //images
   const doc = await articleCategoriesModel.findByIdAndUpdate(
     req.params.id,
@@ -51,20 +54,22 @@ exports.update = catchAsync(async (req, res, next) => {
   });
 });
 exports.createOne = catchAsync(async (req, res, next) => {
-  if (req.body.connectCategory && !Array.isArray(req.body.connectCategory))
-    return next(new AppError('Data are not Correct Format', 500));
   const filterBody = filterObj(
     req.body,
-    'name',
-    'email',
-    'phone',
-    'skype',
-    'connectCategory',
+    'title',
+    'matter',
     'description',
+    'category',
   ); //filtering unwanted Field
-  if (req.file) filterBody.photo = req.file.filename;
+  if (req.files && req.files.imageCover)
+    filterBody.imageCover = req.files.imageCover[0].filename;
+  else return next(new AppError('Image Cover not uploaded', 403));
+
+  if (req.files && req.files.images)
+    filterBody.images = req.files.images.filter((item) => item.filename);
+  else return next(new AppError('articles Images Cover not uploaded', 403));
   filterBody.addedBy = req.user.id;
-  const doc = await ConnectProfessionalsModel.create(filterBody);
+  const doc = await articleCategoriesModel.create(filterBody);
   res.status(201).json({
     status: 'success',
     data: {
@@ -73,9 +78,11 @@ exports.createOne = catchAsync(async (req, res, next) => {
   });
 });
 exports.getOne = catchAsync(async (req, res, next) => {
-  let doc = await ConnectProfessionalsModel.findById(req.params.id)
-    .populate('connectCategory')
-    .populate('addedBy', 'name');
+  let doc = await articleCategoriesModel
+    .findById(req.params.id)
+    .populate('category')
+    .populate('postedBy', 'name');
+
   if (!doc) return next(new AppError('requested Id not found', 404));
 
   res.status(200).json({
@@ -84,10 +91,11 @@ exports.getOne = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAll = catchAsync(async (req, res, next) => {
-  const doc = await ConnectProfessionalsModel.find()
+  const doc = await articleCategoriesModel
+    .find()
     .sort({date: 1})
-    .populate('connectCategory')
-    .populate('addedBy', 'name');
+    .populate('category')
+    .populate('postedBy', 'name');
 
   res.status(200).json({
     status: 'success',
@@ -97,12 +105,13 @@ exports.getAll = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllWithCategory = catchAsync(async (req, res, next) => {
-  const doc = await ConnectProfessionalsModel.find({
-    connectCategory: mongoose.Types.ObjectId(req.params.categoryId),
-  })
+  const doc = await articleCategoriesModel
+    .find({
+      category: mongoose.Types.ObjectId(req.params.categoryId),
+    })
     .sort({date: 1})
-    .populate('connectCategory')
-    .populate('addedBy', 'name');
+    .populate('category')
+    .populate('postedBy', 'name');
 
   res.status(200).json({
     status: 'success',
