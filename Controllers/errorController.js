@@ -47,13 +47,13 @@ const sendErrProd = (err, res) => {
 };
 
 module.exports = (err, req, res, next) => {
+  console.log('Test error', err, err.message);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development') {
     sendErrDev(err, res);
   } else {
     let error = {...err};
-    console.log('Test ', error);
     if (error.name === 'CastError') error = handleCastError(error);
     if (err.code === 11000) error = handleDuplicate(error);
     if (error.name === 'ValidationError') error = HandleValidationError(error);

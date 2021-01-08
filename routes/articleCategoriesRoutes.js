@@ -5,7 +5,7 @@ const protect = require('../middleware/protect');
 //const restrictTo = require('../middleware/restrictedTo');
 
 const router = express.Router();
-//router.use(protect);
+router.use(protect);
 
 router
   .route('/')
