@@ -47,7 +47,6 @@ const sendErrProd = (err, res) => {
 };
 
 module.exports = (err, req, res, next) => {
-  console.log('Test error', err, err.message);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development') {
@@ -59,6 +58,6 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'ValidationError') error = HandleValidationError(error);
     if (error.name === 'JsonWebTokenError') error = handleJWTErr();
     if (error.name === 'TokenExpiredError') error = handleJWTExpire();
-    sendErrProd(error, res);
+    sendErrProd(err, res);
   }
 };
