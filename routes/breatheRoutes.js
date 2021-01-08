@@ -25,10 +25,10 @@ router.get('/', breatheController.getAll);
 router.get('/:id', breatheController.getOne);
 router.patch(
   '/:id',
-  setMimetype('image'),
-  upload.single('thumbnail'),
-  setMimetype('video'),
-  upload.single('video'),
+  upload.fields([
+    {name: 'thumbnail', maxCount: 1},
+    {name: 'video', maxCount: 1},
+  ]),
   breatheController.update,
 );
 router.delete('/:id', breatheController.delete);
