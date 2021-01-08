@@ -14,7 +14,7 @@ var articleCategoriesSchema = mongoose.Schema({
 });
 
 var articleCategories = mongoose.model(
-  'connectCategories',
+  'articleCategories',
   articleCategoriesSchema,
 );
 module.exports = articleCategories;

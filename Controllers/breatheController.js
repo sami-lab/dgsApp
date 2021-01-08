@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
 const breatheModel = require('../Models/breatheModel');
+const breatheCategories = require('../Models/breatheCategories');
 
 //To filter Some fields from req.body so we can update only these fields
 const filterObj = (obj, ...allowed) => {
@@ -13,6 +14,10 @@ const filterObj = (obj, ...allowed) => {
   return newObj;
 };
 exports.delete = catchAsync(async (req, res, next) => {
+  const check = await breatheCategories.find({
+    category: mongoose.Types.ObjectId(req.params.id),
+  });
+  if (check) return next(new AppError('Category are already in use', 403));
   const doc = await breatheModel.findByIdAndDelete(req.params.id);
   if (!doc) {
     return next(new AppError('Requested Id not found', 404));

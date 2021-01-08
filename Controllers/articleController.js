@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-const articleCategoriesModel = require('../Models/articleCategoriesModel');
+const articleModels = require('../Models/articleModel');
 
 //To filter Some fields from req.body so we can update only these fields
 const filterObj = (obj, ...allowed) => {
@@ -13,7 +13,7 @@ const filterObj = (obj, ...allowed) => {
   return newObj;
 };
 exports.delete = catchAsync(async (req, res, next) => {
-  const doc = await articleCategoriesModel.findByIdAndDelete(req.params.id);
+  const doc = await articleModels.findByIdAndDelete(req.params.id);
   if (!doc) {
     return next(new AppError('Requested Id not found', 404));
   }
@@ -35,14 +35,10 @@ exports.update = catchAsync(async (req, res, next) => {
   if (req.files && req.files.images)
     filterBody.images = req.files.images.filter((item) => item.filename);
   filterBody.postedBy = req.user.id; //images
-  const doc = await articleCategoriesModel.findByIdAndUpdate(
-    req.params.id,
-    filterBody,
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
+  const doc = await articleModels.findByIdAndUpdate(req.params.id, filterBody, {
+    new: true,
+    runValidators: true,
+  });
   if (!doc) {
     return next(new AppError('requested Id not found', 404));
   }
@@ -69,7 +65,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
     filterBody.images = req.files.images.filter((item) => item.filename);
   else return next(new AppError('articles Images Cover not uploaded', 403));
   filterBody.addedBy = req.user.id;
-  const doc = await articleCategoriesModel.create(filterBody);
+  const doc = await articleModels.create(filterBody);
   res.status(201).json({
     status: 'success',
     data: {
@@ -78,7 +74,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
   });
 });
 exports.getOne = catchAsync(async (req, res, next) => {
-  let doc = await articleCategoriesModel
+  let doc = await articleModels
     .findById(req.params.id)
     .populate('category')
     .populate('postedBy', 'name');
@@ -91,7 +87,7 @@ exports.getOne = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAll = catchAsync(async (req, res, next) => {
-  const doc = await articleCategoriesModel
+  const doc = await articleModels
     .find()
     .sort({date: 1})
     .populate('category')
@@ -105,7 +101,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllWithCategory = catchAsync(async (req, res, next) => {
-  const doc = await articleCategoriesModel
+  const doc = await articleModels
     .find({
       category: mongoose.Types.ObjectId(req.params.categoryId),
     })
