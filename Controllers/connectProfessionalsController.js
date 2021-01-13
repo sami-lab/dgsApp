@@ -30,11 +30,11 @@ exports.update = catchAsync(async (req, res, next) => {
     'name',
     'email',
     'phone',
-    'skype',
+    'website',
     'connectCategory',
     'description',
   ); //filtering unwanted Field
-  if (req.file) filterBody.photo = req.file.filename;
+  if (req.file) filterBody.image = req.file.filename;
   const doc = await ConnectProfessionalsModel.findByIdAndUpdate(
     req.params.id,
     filterBody,
@@ -61,11 +61,11 @@ exports.createOne = catchAsync(async (req, res, next) => {
     'name',
     'email',
     'phone',
-    'skype',
+    'website',
     'connectCategory',
     'description',
   ); //filtering unwanted Field
-  if (req.file) filterBody.photo = req.file.filename;
+  if (req.file) filterBody.image = req.file.filename;
   filterBody.addedBy = req.user.id;
   const doc = await ConnectProfessionalsModel.create(filterBody);
   res.status(201).json({

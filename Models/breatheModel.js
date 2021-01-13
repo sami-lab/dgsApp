@@ -11,10 +11,6 @@ var BreatheSchema = mongoose.Schema({
     default: 'default.png',
     required: true,
   },
-  description: {
-    type: String,
-    required: [true, 'A Breathe Video must have description'],
-  },
   video: {
     type: String,
     required: [true, 'A Breathe Video must have video'],

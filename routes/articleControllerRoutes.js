@@ -13,20 +13,23 @@ router.use(protect);
 //router.use(restrictTo(['Admin']));
 router.route('/').post(
   upload.fields([
-    {name: 'imageCover', maxCount: 1},
-    {name: 'images', maxCount: 3},
+    {name: 'thumbnail', maxCount: 1},
+    {name: 'files', maxCount: 3},
   ]),
   articleController.createOne,
 );
 
-router.get('/articles/:categoryId', articleController.getAllWithCategory);
+router.get(
+  '/articles/:categoryId/:search',
+  articleController.getAllWithCategorySearch,
+);
 router.get('/', articleController.getAll);
 router.get('/:id', articleController.getOne);
 router.patch(
   '/:id',
   upload.fields([
-    {name: 'imageCover', maxCount: 1},
-    {name: 'images', maxCount: 3},
+    {name: 'thumbnail', maxCount: 1},
+    {name: 'files', maxCount: 3},
   ]),
   articleController.update,
 );

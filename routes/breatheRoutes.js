@@ -20,7 +20,10 @@ router.route('/').post(
   breatheController.createOne,
 );
 
-router.get('/videos/:categoryId', breatheController.getAllWithCategory);
+router.get(
+  '/videos/:categoryId/:search',
+  breatheController.getAllWithCategorySearch,
+);
 router.get('/', breatheController.getAll);
 router.get('/:id', breatheController.getOne);
 router.patch(

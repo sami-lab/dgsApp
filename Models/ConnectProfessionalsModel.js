@@ -20,7 +20,7 @@ var ConnectProfessionalsSchema = mongoose.Schema({
     type: String,
     required: [true, 'A Connect Professionals must have an short Bio'],
   },
-  skype: {
+  website: {
     type: String,
   },
   email: {

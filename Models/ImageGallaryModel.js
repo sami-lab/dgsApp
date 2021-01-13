@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 var ImageGallarySchema = mongoose.Schema({
-  url: {
+  image: {
     type: String,
     required: [true, 'A Image Gallary image must have a image'],
   },

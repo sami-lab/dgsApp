@@ -35,6 +35,9 @@ const multerFilter = (req, file, cb) => {
     case 'attachement':
       allowedType = /\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|pdf|doc|docx)$/;
       break;
+    case 'files':
+      allowedType = /\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|pdf|doc|docx)$/;
+      break;
     default:
       break;
   }

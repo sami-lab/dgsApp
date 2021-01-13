@@ -19,7 +19,7 @@ exports.update = catchAsync(async (req, res, next) => {
   if (!req.file) return next(new AppError('Image not uploaded', 403));
   const doc = await ImageGallaryModel.findByIdAndUpdate(
     req.params.id,
-    {url: req.file.filename},
+    {image: req.file.filename},
     {
       new: true,
       runValidators: true,
@@ -39,7 +39,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
   if (!req.file) return next(new AppError('Image not uploaded', 403));
   const doc = await ImageGallaryModel.create({
     postedBy: req.user.id,
-    url: req.file.filename,
+    image: req.file.filename,
   });
 
   res.status(201).json({

@@ -13,19 +13,11 @@ router.use(protect);
 router
   .route('/')
   .get(ImageGallaryController.getAll)
-  .post(
-    setMimetype('image'),
-    upload.single('url'),
-    ImageGallaryController.createOne,
-  );
+  .post(upload.single('image'), ImageGallaryController.createOne);
 
 router
   .route('/:id')
   .get(ImageGallaryController.getOne)
-  .patch(
-    setMimetype('image'),
-    upload.single('url'),
-    ImageGallaryController.update,
-  )
+  .patch(upload.single('image'), ImageGallaryController.update)
   .delete(ImageGallaryController.delete);
 module.exports = router;

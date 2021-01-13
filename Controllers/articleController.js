@@ -23,17 +23,11 @@ exports.delete = catchAsync(async (req, res, next) => {
   });
 });
 exports.update = catchAsync(async (req, res, next) => {
-  const filterBody = filterObj(
-    req.body,
-    'title',
-    'matter',
-    'description',
-    'category',
-  ); //filtering unwanted Field
-  if (req.files && req.files.imageCover)
-    filterBody.imageCover = req.files.imageCover[0].filename;
-  if (req.files && req.files.images)
-    filterBody.images = req.files.images.filter((item) => item.filename);
+  const filterBody = filterObj(req.body, 'title', 'matter', 'category'); //filtering unwanted Field
+  if (req.files && req.files.thumbnail)
+    filterBody.imageCover = req.files.thumbnail[0].filename;
+  if (req.files && req.files.files)
+    filterBody.images = req.files.files.filter((item) => item.filename);
   filterBody.postedBy = req.user.id; //images
   const doc = await articleModels.findByIdAndUpdate(req.params.id, filterBody, {
     new: true,
@@ -50,21 +44,15 @@ exports.update = catchAsync(async (req, res, next) => {
   });
 });
 exports.createOne = catchAsync(async (req, res, next) => {
-  const filterBody = filterObj(
-    req.body,
-    'title',
-    'matter',
-    'description',
-    'category',
-  ); //filtering unwanted Field
-  if (req.files && req.files.imageCover)
-    filterBody.imageCover = req.files.imageCover[0].filename;
+  const filterBody = filterObj(req.body, 'title', 'matter', 'category'); //filtering unwanted Field
+  if (req.files && req.files.thumbnail)
+    filterBody.thumbnail = req.files.thumbnail[0].filename;
   else return next(new AppError('Image Cover not uploaded', 403));
 
-  if (req.files && req.files.images)
-    filterBody.images = req.files.images.filter((item) => item.filename);
-  else return next(new AppError('articles Images Cover not uploaded', 403));
-  filterBody.addedBy = req.user.id;
+  if (req.files && req.files.files)
+    filterBody.images = req.files.files.filter((item) => item.filename);
+
+  filterBody.postedBy = req.user.id;
   const doc = await articleModels.create(filterBody);
   res.status(201).json({
     status: 'success',
@@ -100,14 +88,69 @@ exports.getAll = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllWithCategory = catchAsync(async (req, res, next) => {
-  const doc = await articleModels
-    .find({
-      category: mongoose.Types.ObjectId(req.params.categoryId),
-    })
-    .sort({date: 1})
-    .populate('category')
-    .populate('postedBy', 'name');
+//1 seatch by both
+//2 when search is empty
+//3 when category is empty
+//4 when both params is empty
+exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
+  let doc = null;
+  //Case 1: when with both params
+  if (req.params.categoryId !== 'null' && req.params.search !== 'null') {
+    const reg = new RegExp(`.*${req.params.search}.*`, 'i');
+    doc = await articleModels
+      .find({
+        $and: [
+          {category: mongoose.Types.ObjectId(req.params.categoryId)},
+          {
+            title: {$regex: reg},
+          },
+        ],
+      })
+      .sort({date: 1})
+      .populate('category')
+      .populate('postedBy', 'name');
+  }
+  //Case 2
+  else if (
+    !req.params.search ||
+    req.params.search == 'null' ||
+    (req.params.search == '' &&
+      req.params.categoryId &&
+      req.params.categoryId != null)
+  ) {
+    doc = await articleModels
+      .find({
+        category: mongoose.Types.ObjectId(req.params.categoryId),
+      })
+      .sort({date: 1})
+      .populate('category')
+      .populate('postedBy', 'name');
+  }
+  //Case 3: find all videos includes search text in description
+  else if (
+    req.params.search &&
+    req.params.search != null &&
+    (!req.params.categoryId ||
+      req.params.categoryId == 'null' ||
+      req.params.categoryId == '')
+  ) {
+    const reg = new RegExp(`.*${req.params.search}.*`, 'i');
+    doc = await articleModels
+      .find({
+        title: {$regex: reg},
+      })
+      .sort({date: 1})
+      .populate('category')
+      .populate('postedBy', 'name');
+  }
+  //Case 4: find all
+  else {
+    doc = await articleModels
+      .find()
+      .sort({date: 1})
+      .populate('category')
+      .populate('postedBy', 'name');
+  }
 
   res.status(200).json({
     status: 'success',

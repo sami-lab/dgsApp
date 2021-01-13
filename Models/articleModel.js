@@ -14,17 +14,16 @@ var articleSchema = mongoose.Schema({
     type: String,
     required: [true, 'An artcle must have description'],
   },
-  imageCover: {
+  thumbnail: {
     type: String,
     required: [true, 'An article must have a cover image'],
   },
-  images: [String],
+  files: [String],
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'articleCategories',
     required: true,
   },
-
   date: {
     type: Date,
     default: Date.now(),
