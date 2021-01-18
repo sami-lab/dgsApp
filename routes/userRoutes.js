@@ -24,7 +24,7 @@ router.patch('/updateMe', upload.single('photo'), userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
 
 //router.use(restrictTo(['Admin']));
-//router.route('/').get(userController.getalluser);
+router.route('/').get(userController.getalluser);
 // router
 //   .route('/:id')
 //   .get(userController.getUser)

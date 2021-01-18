@@ -39,6 +39,7 @@ const multerFilter = (req, file, cb) => {
       allowedType = /\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|pdf|doc|docx)$/;
       break;
     default:
+      allowedType = /\.(jpg|JPG|jpeg|JPEG|png|PNG)$/;
       break;
   }
   if (file.originalname.match(allowedType)) {

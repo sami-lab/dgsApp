@@ -1,6 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const {sendQuestionMail} = require('../utils/sendQuestionMail');
+const { sendQuestionMail } = require('../utils/sendQuestionMail');
 const AskJackieModel = require('../Models/askJackieModel');
 
 //For admin only
@@ -16,14 +16,15 @@ exports.delete = catchAsync(async (req, res, next) => {
 });
 
 exports.update = catchAsync(async (req, res, next) => {
-  const {subject, question} = req.body;
+  const { subject, question } = req.body;
   const doc = await AskJackieModel.findByIdAndUpdate(
     req.params.id,
-    {subject, question, attachment: req.file.filename, user: req.user.id},
+    { subject, question, user: req.user.id },
+    //{ subject, question, attachment: req.file.filename, user: req.user.id },
     {
       new: true,
       runValidators: true,
-    },
+    }
   );
   if (!doc) {
     return next(new AppError('requested Id not found', 404));
@@ -35,12 +36,27 @@ exports.update = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.updateStatus = catchAsync(async (req, res, next) => {
+  const doc = await AskJackieModel.findByIdAndUpdate(req.params.id, {
+    status: true,
+  }).select('+status');
+  if (!doc) return next(new AppError('No Question Exist with this id', 404));
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      doc,
+    },
+  });
+});
+
 exports.createOne = catchAsync(async (req, res, next) => {
-  const {subject, question} = req.body;
+  const { subject, question } = req.body;
   const doc = await AskJackieModel.create({
     subject,
     question,
-    attachment: req.file.filename,
+    // attachment: req.file ? req.file.filename : undefined,
     user: req.user.id,
   });
 
@@ -48,11 +64,11 @@ exports.createOne = catchAsync(async (req, res, next) => {
     {
       subject,
       question,
-      attachment: req.file.filename,
+      // attachment: req.file ? req.file.filename : undefined,
       user: req.user,
     },
     req,
-    res,
+    res
   );
 });
 exports.getOne = catchAsync(async (req, res, next) => {
@@ -61,15 +77,15 @@ exports.getOne = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: {doc},
+    data: { doc },
   });
 });
 exports.getAll = catchAsync(async (req, res, next) => {
-  const doc = await AskJackieModel.find().sort({date: 1});
+  const doc = await AskJackieModel.find({ status: false }).sort({ date: 1 });
 
   res.status(200).json({
     status: 'success',
     result: doc.length,
-    data: {doc},
+    data: { doc },
   });
 });

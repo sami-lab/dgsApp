@@ -10,10 +10,7 @@ var articleSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: [true, 'An artcle must have description'],
-  },
+
   thumbnail: {
     type: String,
     required: [true, 'An article must have a cover image'],

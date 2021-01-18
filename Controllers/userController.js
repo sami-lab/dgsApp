@@ -38,7 +38,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user.id, {active: false});
+  await User.findByIdAndUpdate(req.user.id, { active: false });
   res.status(204).json({
     status: 'success',
   });
@@ -50,7 +50,7 @@ exports.getalluser = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     result: doc.length,
-    data: {doc},
+    data: { doc },
   });
 });
 exports.getUser = catchAsync(async (req, res, next) => {
@@ -59,7 +59,7 @@ exports.getUser = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: {user: doc},
+    data: { user: doc },
   });
 });
 //Do not Update Password with this

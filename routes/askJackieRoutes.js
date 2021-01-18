@@ -9,8 +9,12 @@ const protect = require('../middleware/protect');
 const router = express.Router();
 router.use(protect);
 //
-router.post('/', upload.single('attachment'), askJackieController.createOne);
+// router.post('/', upload.single('attachment'), askJackieController.createOne);
+router.post('/', askJackieController.createOne);
+
 router.get('/', askJackieController.getAll);
+router.post('/updateStatus/:id', askJackieController.updateStatus);
+
 // router.post('/validateUsername', authController.validateUsername);
 // router.post('/validateEmail', authController.validateEmail);
 // router.post('/verifyEmail/:token', authController.verifyEmail);
