@@ -32,7 +32,7 @@ exports.update = catchAsync(async (req, res, next) => {
     'phone',
     'website',
     'connectCategory',
-    'description',
+    'description'
   ); //filtering unwanted Field
   if (req.file) filterBody.image = req.file.filename;
   const doc = await ConnectProfessionalsModel.findByIdAndUpdate(
@@ -41,7 +41,7 @@ exports.update = catchAsync(async (req, res, next) => {
     {
       new: true,
       runValidators: true,
-    },
+    }
   );
   if (!doc) {
     return next(new AppError('requested Id not found', 404));
@@ -63,7 +63,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
     'phone',
     'website',
     'connectCategory',
-    'description',
+    'description'
   ); //filtering unwanted Field
   if (req.file) filterBody.image = req.file.filename;
   filterBody.addedBy = req.user.id;
@@ -83,19 +83,19 @@ exports.getOne = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: {doc},
+    data: { doc },
   });
 });
 exports.getAll = catchAsync(async (req, res, next) => {
   const doc = await ConnectProfessionalsModel.find()
-    .sort({date: 1})
+    .sort({ date: -1 })
     .populate('connectCategory')
     .populate('addedBy', 'name');
 
   res.status(200).json({
     status: 'success',
     result: doc.length,
-    data: {doc},
+    data: { doc },
   });
 });
 
@@ -103,7 +103,7 @@ exports.getAllWithCategory = catchAsync(async (req, res, next) => {
   const doc = await ConnectProfessionalsModel.find({
     connectCategory: mongoose.Types.ObjectId(req.params.categoryId),
   })
-    .sort({date: 1})
+    .sort({ date: -1 })
     .populate('connectCategory')
     .populate('addedBy', 'name');
 
@@ -111,6 +111,6 @@ exports.getAllWithCategory = catchAsync(async (req, res, next) => {
     status: 'success',
     result: doc.length,
     categoryId: req.params.categoryId,
-    data: {doc},
+    data: { doc },
   });
 });

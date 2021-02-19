@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
     if (fs.existsSync('/public/files')) {
       callback(null, 'public/files');
     } else {
-      fs.mkdir('/public/files', {recursive: true}, () => {
+      fs.mkdir('/public/files', { recursive: true }, () => {
         callback(null, 'public/files');
       });
     }

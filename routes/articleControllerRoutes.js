@@ -11,12 +11,13 @@ router.use(protect);
 
 //For admin only
 //router.use(restrictTo(['Admin']));
-router
-  .route('/')
-  .post(
-    upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'files' }]),
-    articleController.createOne
-  );
+router.route('/').post(
+  upload.fields([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'files', maxCount: 5 },
+  ]),
+  articleController.createOne
+);
 
 router.get(
   '/articles/:categoryId/:search',
@@ -26,7 +27,10 @@ router.get('/', articleController.getAll);
 router.get('/:id', articleController.getOne);
 router.patch(
   '/:id',
-  upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'files' }]),
+  upload.fields([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'files', maxCount: 5 },
+  ]),
   articleController.update
 );
 router.delete('/:id', articleController.delete);

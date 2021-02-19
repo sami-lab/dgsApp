@@ -14,25 +14,27 @@ router.use(protect);
 //router.use(restrictTo(['Admin']));
 router.route('/').post(
   upload.fields([
-    {name: 'thumbnail', maxCount: 1},
-    {name: 'video', maxCount: 1},
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'video', maxCount: 1 },
   ]),
-  breatheController.createOne,
+  breatheController.createOne
 );
 
 router.get(
   '/videos/:categoryId/:search',
-  breatheController.getAllWithCategorySearch,
+  breatheController.getAllWithCategorySearch
 );
 router.get('/', breatheController.getAll);
+router.get('/getRandomVideos', breatheController.getRandomVideos);
+
 router.get('/:id', breatheController.getOne);
 router.patch(
   '/:id',
   upload.fields([
-    {name: 'thumbnail', maxCount: 1},
-    {name: 'video', maxCount: 1},
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'video', maxCount: 1 },
   ]),
-  breatheController.update,
+  breatheController.update
 );
 router.delete('/:id', breatheController.delete);
 

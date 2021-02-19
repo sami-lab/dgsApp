@@ -4,7 +4,7 @@ var BreatheSchema = mongoose.Schema({
   title: {
     type: String,
     trim: true,
-    required: [true, 'A Connect Professionals must have a name'],
+    required: [true, 'A Breathe must have a title'],
   },
   thumbnail: {
     type: String,
@@ -13,7 +13,6 @@ var BreatheSchema = mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, 'An artcle must have description'],
   },
   video: {
     type: String,

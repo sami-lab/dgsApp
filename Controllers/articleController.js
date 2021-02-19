@@ -50,7 +50,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
   else return next(new AppError('Image Cover not uploaded', 403));
 
   if (req.files && req.files.files)
-    filterBody.files = req.files.files.filter((item) => item.filename);
+    filterBody.files = req.files.files.map((item) => item.filename);
 
   filterBody.postedBy = req.user.id;
   const doc = await articleModels.create(filterBody);
@@ -75,6 +75,7 @@ exports.getOne = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAll = catchAsync(async (req, res, next) => {
+  let total = await articleModels.countDocuments();
   let query = articleModels
     .find()
     .sort({ date: -1 })
@@ -82,16 +83,16 @@ exports.getAll = catchAsync(async (req, res, next) => {
     .populate('postedBy', 'name');
 
   const page = +req.query.page || 1;
-  const limit = +req.query.limit || 5;
+  const limit = +req.query.limit || 30;
   const skip = (page - 1) * limit;
   query = query.skip(skip).limit(limit);
   if (req.query.page) {
-    const total = await articleModels.countDocuments();
     if (skip >= total) next(new AppError('This Page Does not exist', 404));
   }
   const doc = await query;
   res.status(200).json({
     status: 'success',
+    total,
     result: doc.length,
     data: { doc },
   });
@@ -103,6 +104,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
 //4 when both params is empty
 exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
   let query = null;
+  let total = 0;
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 30;
   const skip = (page - 1) * limit;
@@ -123,15 +125,15 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
       .populate('category')
       .populate('postedBy', 'name');
 
+    total = await articleModels.countDocuments({
+      $and: [
+        { category: mongoose.Types.ObjectId(req.params.categoryId) },
+        {
+          title: { $regex: reg },
+        },
+      ],
+    });
     if (req.query.page) {
-      const total = await articleModels.countDocuments({
-        $and: [
-          { category: mongoose.Types.ObjectId(req.params.categoryId) },
-          {
-            title: { $regex: reg },
-          },
-        ],
-      });
       if (skip >= total) next(new AppError('This Page Does not exist', 404));
     }
   }
@@ -151,10 +153,10 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
       .populate('category')
       .populate('postedBy', 'name');
 
+    total = await articleModels.countDocuments({
+      category: mongoose.Types.ObjectId(req.params.categoryId),
+    });
     if (req.query.page) {
-      const total = await articleModels.countDocuments({
-        category: mongoose.Types.ObjectId(req.params.categoryId),
-      });
       if (skip >= total) next(new AppError('This Page Does not exist', 404));
     }
   }
@@ -175,10 +177,10 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
       .populate('category')
       .populate('postedBy', 'name');
 
+    total = await articleModels.countDocuments({
+      title: { $regex: reg },
+    });
     if (req.query.page) {
-      const total = await articleModels.countDocuments({
-        title: { $regex: reg },
-      });
       if (skip >= total) next(new AppError('This Page Does not exist', 404));
     }
   }
@@ -190,8 +192,8 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
       .populate('category')
       .populate('postedBy', 'name');
 
+    total = await articleModels.countDocuments();
     if (req.query.page) {
-      const total = await articleModels.countDocuments();
       if (skip >= total) next(new AppError('This Page Does not exist', 404));
     }
   }
@@ -200,6 +202,7 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
+    total,
     result: doc.length,
     categoryId: req.params.categoryId,
     data: { doc },

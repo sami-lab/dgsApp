@@ -127,6 +127,7 @@ exports.getOne = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAll = catchAsync(async (req, res, next) => {
+  let total = await breatheModel.countDocuments();
   let query = breatheModel
     .find()
     .sort({ date: -1 })
@@ -137,24 +138,32 @@ exports.getAll = catchAsync(async (req, res, next) => {
   const skip = (page - 1) * limit;
   query = query.skip(skip).limit(limit);
   if (req.query.page) {
-    const total = await breatheModel.countDocuments();
     if (skip >= total) next(new AppError('This Page Does not exist', 404));
   }
   const doc = await query;
 
   res.status(200).json({
     status: 'success',
+    total,
     result: doc.length,
     data: { doc },
   });
 });
+exports.getRandomVideos = catchAsync(async (req, res, next) => {
+  let doc = await breatheModel.aggregate([{ $sample: { size: 10 } }]);
 
+  res.status(200).json({
+    status: 'success',
+    data: { doc },
+  });
+});
 //1 seatch by both
 //2 when search is empty
 //3 when category is empty
 //4 when both params is empty
 exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
   let query = null;
+  let total = 0;
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 5;
   const skip = (page - 1) * limit;
@@ -176,15 +185,15 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
       .populate('category')
       .populate('postedBy', 'name');
 
+    total = await breatheModel.countDocuments({
+      $and: [
+        { category: mongoose.Types.ObjectId(req.params.categoryId) },
+        {
+          $or: [{ description: { $regex: reg } }, { title: { $regex: reg } }],
+        },
+      ],
+    });
     if (req.query.page) {
-      const total = await breatheModel.countDocuments({
-        $and: [
-          { category: mongoose.Types.ObjectId(req.params.categoryId) },
-          {
-            $or: [{ description: { $regex: reg } }, { title: { $regex: reg } }],
-          },
-        ],
-      });
       if (skip >= total) next(new AppError('This Page Does not exist', 404));
     }
   }
@@ -204,10 +213,10 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
       .populate('category')
       .populate('postedBy', 'name');
 
+    total = await breatheModel.countDocuments({
+      category: mongoose.Types.ObjectId(req.params.categoryId),
+    });
     if (req.query.page) {
-      const total = await breatheModel.countDocuments({
-        category: mongoose.Types.ObjectId(req.params.categoryId),
-      });
       if (skip >= total) next(new AppError('This Page Does not exist', 404));
     }
   }
@@ -228,10 +237,10 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
       .populate('category')
       .populate('postedBy', 'name');
 
+    total = await breatheModel.countDocuments({
+      $or: [{ description: { $regex: reg } }, { title: { $regex: reg } }],
+    });
     if (req.query.page) {
-      const total = await breatheModel.countDocuments({
-        $or: [{ description: { $regex: reg } }, { title: { $regex: reg } }],
-      });
       if (skip >= total) next(new AppError('This Page Does not exist', 404));
     }
   }
@@ -243,8 +252,8 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
       .populate('category')
       .populate('postedBy', 'name');
 
+    const total = await breatheModel.countDocuments();
     if (req.query.page) {
-      const total = await breatheModel.countDocuments();
       if (skip >= total) next(new AppError('This Page Does not exist', 404));
     }
   }
@@ -254,6 +263,7 @@ exports.getAllWithCategorySearch = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
+    total,
     result: doc.length,
     categoryId: req.params.categoryId,
     data: { doc },

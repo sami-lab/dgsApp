@@ -23,7 +23,7 @@ const ImageGalleryRoutes = require('./routes/ImageGallery');
 
 const app = express();
 //body parse middleware
-app.use(express.json({limit: '5mb'}));
+app.use(express.json({ limit: '5mb' }));
 //app.use(express.json());
 // app.use(express.)
 app.enable('trust proxy');
@@ -80,8 +80,8 @@ app.all('*', (req, res, next) => {
   next(
     new AppError(
       `requested Url ${req.originalUrl} could not be found on this server`,
-      404,
-    ),
+      404
+    )
   );
 });
 app.use(globalError);
