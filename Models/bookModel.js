@@ -11,6 +11,7 @@ var BookSchema = mongoose.Schema({
   },
   website: {
     type: String,
+    required: [true, 'A Book  must have website url'],
   },
 
   date: {

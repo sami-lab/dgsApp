@@ -11,6 +11,7 @@ var ShopSchema = mongoose.Schema({
   },
   website: {
     type: String,
+    required: [true, 'A Shop  must have website url'],
   },
 
   date: {
