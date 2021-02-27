@@ -12,7 +12,11 @@ var JournalSchema = mongoose.Schema({
     type: String,
     required: [true, 'A note must have title'],
   },
-
+  postedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   date: {
     type: Date,
     default: Date.now(),

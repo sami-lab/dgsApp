@@ -12,6 +12,10 @@ const filterObj = (obj, ...allowed) => {
   return newObj;
 };
 exports.delete = catchAsync(async (req, res, next) => {
+  const check = await journalModel.find({
+    $and: [{ postedBy: req.user.id }, { _id: req.params.id }],
+  });
+  if (!check) return next(new AppError('Requested Id not found', 403));
   const doc = await journalModel.findByIdAndDelete(req.params.id);
   if (!doc) {
     return next(new AppError('Requested Id not found', 404));
@@ -22,12 +26,15 @@ exports.delete = catchAsync(async (req, res, next) => {
   });
 });
 exports.update = catchAsync(async (req, res, next) => {
-  const filterBody = filterObj(req.body, 'title', 'description'); //filtering unwanted Field
+  const filterBody = filterObj(req.body, 'title', 'description', 'image');
+  if (!filterBody.image) filterBody.image = undefined;
+  //filtering unwanted Field
   if (req.file) filterBody.image = req.file.filename;
   const doc = await journalModel.findByIdAndUpdate(req.params.id, filterBody, {
     new: true,
     runValidators: true,
   });
+
   if (!doc) {
     return next(new AppError('requested Id not found', 404));
   }
@@ -41,6 +48,8 @@ exports.update = catchAsync(async (req, res, next) => {
 exports.createOne = catchAsync(async (req, res, next) => {
   const filterBody = filterObj(req.body, 'title', 'description'); //filtering unwanted Field
   if (req.file) filterBody.image = req.file.filename;
+  filterBody.postedBy = req.user.id;
+
   const doc = await journalModel.create(filterBody);
   res.status(201).json({
     status: 'success',
@@ -59,7 +68,9 @@ exports.getOne = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAll = catchAsync(async (req, res, next) => {
-  const doc = await journalModel.find().sort({ date: -1 });
+  const doc = await journalModel
+    .find({ postedBy: req.user.id })
+    .sort({ date: -1 });
 
   res.status(200).json({
     status: 'success',
