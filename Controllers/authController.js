@@ -8,7 +8,7 @@ const AppError = require('../utils/appError');
 const Email = require('../utils/emails');
 
 const createLoginToken = (user, statusCode, req, res) => {
-  const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
   user.password = undefined; //not saving
@@ -23,7 +23,7 @@ const createLoginToken = (user, statusCode, req, res) => {
 
 //This route is only for User Registeration
 exports.signUp = catchAsync(async (req, res, next) => {
-  const roleId = await Roles.findOne({name: 'User'});
+  const roleId = await Roles.findOne({ name: 'User' });
   let newUser = {
     name: req.body.name,
     email: req.body.email,
@@ -79,14 +79,14 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
     .digest('hex');
   const user = await User.findOne({
     emailVerificationToken: hashToken,
-    emailVerificationExpires: {$gt: Date.now()},
+    emailVerificationExpires: { $gt: Date.now() },
   });
   if (!user) return next(new AppError('Token is Invalid or expired', 400));
   //Updating Field if there token verifies
   user.emailVerified = true;
   user.emailVerificationToken = undefined;
   user.emailVerificationExpires = undefined;
-  await user.save({validateBeforeSave: false});
+  await user.save({ validateBeforeSave: false });
 
   const homepage = `${req.protocol}://${req.get('host')}/`;
   try {
@@ -99,17 +99,19 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
   } catch (err) {
     console.log(err);
     return next(
-      new AppError('There was an error sending an email, Try Again Later', 500),
+      new AppError('There was an error sending an email, Try Again Later', 500)
     );
   }
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-  const {username, password} = req.body;
+  const { username, password } = req.body;
   if (!username || !password) {
     return next(new AppError('Please Provide username and password', 400));
   }
-  const user = await User.findOne({username}).select('+password');
+  const user = await User.findOne({
+    $and: [{ username }, { userStatus: { $ne: true } }],
+  }).select('+password');
   //Comparing password
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect Username or password', 401));
@@ -119,16 +121,16 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   //Get User Based on Email
-  const user = await User.findOne({email: req.body.email});
+  const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(new AppError('There is No User with These Email', 404));
   }
   //Generate Random Token
   const resetToken = user.createResetPasswordToken();
-  await user.save({validateBeforeSave: false}); //Saving only 2 Fields
+  await user.save({ validateBeforeSave: false }); //Saving only 2 Fields
   //Sending Email
   const resettoken = `${req.protocol}://${req.get(
-    'host',
+    'host'
   )}/api/users/resetPassword/${resetToken}`;
   const homepage = `${req.protocol}://${req.get('host')}/`;
   try {
@@ -140,9 +142,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   } catch (err) {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
-    await user.save({validateBeforeSave: false});
+    await user.save({ validateBeforeSave: false });
     return next(
-      new AppError('There was an error sending an email, Try Again Later', 500),
+      new AppError('There was an error sending an email, Try Again Later', 500)
     );
   }
 });
@@ -154,7 +156,8 @@ exports.validateToken = catchAsync(async (req, res, next) => {
     .digest('hex');
   const user = await User.findOne({
     passwordResetToken: hashToken,
-    passwordResetExpires: {$gt: Date.now()},
+    passwordResetExpires: { $gt: Date.now() },
+    userStatus: { $ne: true },
   });
   if (!user) return next(new AppError('Token is Invalid or expired', 400));
 
@@ -172,12 +175,12 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .digest('hex');
   const user = await User.findOne({
     passwordResetToken: hashToken,
-    passwordResetExpires: {$gt: Date.now()},
+    passwordResetExpires: { $gt: Date.now() },
   });
   if (!user) return next(new AppError('Token is Invalid or expired', 400));
   if (user && user.password != user.confirmPassword)
     return next(
-      new AppError('Password and Confirm Password does not match', 400),
+      new AppError('Password and Confirm Password does not match', 400)
     );
   //Updating Field if there token verifies
   user.password = req.body.password;

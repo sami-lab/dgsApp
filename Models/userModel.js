@@ -96,6 +96,11 @@ var UserSchema = mongoose.Schema(
         required: true,
       },
     ],
+    userStatus: {
+      type: Boolean,
+      default: false,
+      select: false,
+    },
     passwordResetToken: String,
     passwordResetExpires: Date,
     emailVerificationToken: String,
@@ -103,9 +108,9 @@ var UserSchema = mongoose.Schema(
     changedPasswordAt: Date,
   },
   {
-    toJSON: {virtuals: true},
-    toObject: {virtuals: true},
-  },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 UserSchema.pre('save', async function (next) {
   //hashing password
@@ -121,7 +126,7 @@ UserSchema.pre('save', async function (next) {
 // })
 UserSchema.methods.correctPassword = async function (
   candidatePassword,
-  userPassword,
+  userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };

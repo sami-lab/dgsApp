@@ -38,14 +38,14 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user.id, { active: false });
+  await User.findByIdAndUpdate(req.user.id, { userStatus: true });
   res.status(204).json({
     status: 'success',
   });
 });
 
 exports.getalluser = catchAsync(async (req, res, next) => {
-  const doc = await User.find();
+  const doc = await User.find({ userStatus: { $ne: true } });
 
   res.status(200).json({
     status: 'success',
@@ -54,7 +54,9 @@ exports.getalluser = catchAsync(async (req, res, next) => {
   });
 });
 exports.getUser = catchAsync(async (req, res, next) => {
-  let doc = await User.findById(req.params.id);
+  let doc = await User.findOne({
+    $and: [{ _id: req.params.id }, { userStatus: { $ne: true } }],
+  });
   if (!doc) return next(new AppError('requested Id not found', 404));
 
   res.status(200).json({
